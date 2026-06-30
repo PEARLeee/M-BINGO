@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>팝업 공간 탐색 빙고</title>
+  <meta name="description" content="팝업스토어를 사진으로 인증하며 완성하는 빙고 게임" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F2;
+      --surface: #FFFFFF;
+      --border: #E2DDD8;
+      --accent: #5B47E0;
+      --accent-light: #EEEdFE;
+      --accent-mid: #C4BCFA;
+      --text-primary: #1A1A1A;
+      --text-secondary: #6B6B6B;
+      --text-hint: #AEAEAE;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 0 0 80px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 20px 16px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-inner { max-width: 480px; margin: 0 auto; }
+    .header-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .header-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+    .header-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* Main */
+    .main { max-width: 480px; margin: 0 auto; padding: 20px 16px; }
+
+    /* Progress */
+    .progress-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .progress-nums { flex: 1; }
+    .progress-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
+    .progress-count { font-size: 26px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+    .progress-count span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
+    .progress-bar-wrap {
+      flex: 2;
+      height: 8px; background: var(--bg);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%; background: var(--accent);
+      border-radius: 99px; transition: width 0.4s ease;
+    }
+
+    /* Bingo badge */
+    .bingo-banner {
+      display: none;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .bingo-banner.show { display: block; }
+    .bingo-banner-title { font-size: 15px; font-weight: 700; color: var(--accent); }
+    .bingo-banner-sub { font-size: 13px; color: #534AB7; margin-top: 2px; }
+
+    /* Grid */
+    .bingo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      aspect-ratio: 1;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 10px;
+      cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.12s, box-shadow 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cell:active { transform: scale(0.96); }
+    .cell.verified { border-color: var(--accent); background: var(--accent-light); }
+
+    .cell-photo {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.28;
+    }
+
+    .cell-body { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+
+    .cell-emoji { font-size: 26px; line-height: 1; }
+    .cell-label {
+      font-size: 10.5px; font-weight: 500;
+      color: var(--text-primary); line-height: 1.4;
+    }
+    .cell.verified .cell-label { color: #3C3489; }
+
+    .cell-check {
+      display: none;
+      position: absolute; top: 7px; right: 7px; z-index: 2;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent);
+      align-items: center; justify-content: center;
+    }
+    .cell.verified .cell-check { display: flex; }
+    .cell-check svg { width: 12px; height: 12px; }
+
+    /* Reset */
+    .reset-btn {
+      width: 100%; padding: 14px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 14px; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .reset-btn:active { background: var(--border); }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(10,10,10,0.55);
+      align-items: flex-end; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 24px 20px 40px;
+      width: 100%; max-width: 480px;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border); border-radius: 99px;
+      margin: 0 auto 20px;
+    }
+    .modal-mission { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .modal-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
+
+    .photo-area {
+      width: 100%; aspect-ratio: 4/3;
+      border-radius: var(--radius-md);
+      border: 1.5px dashed var(--border);
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; overflow: hidden;
+      margin-bottom: 16px; position: relative;
+    }
+    .photo-area img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .photo-placeholder svg { opacity: 0.3; }
+    .photo-placeholder span { font-size: 13px; color: var(--text-hint); }
+
+    .modal-actions { display: flex; gap: 10px; }
+    .btn-cancel {
+      flex: 1; padding: 14px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 14px; font-weight: 500;
+      color: var(--text-secondary); cursor: pointer;
+    }
+    .btn-confirm {
+      flex: 2; padding: 14px;
+      background: var(--accent); border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 14px; font-weight: 700;
+      color: white; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-confirm:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-confirm:not(:disabled):active { opacity: 0.8; }
+
+    input[type=file] { display: none; }
+
+    /* If already verified, show replace note */
+    .replace-note { font-size: 12px; color: var(--text-hint); text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <p class="header-eyebrow">Photo Bingo</p>
+    <h1 class="header-title">팝업 공간 탐색 빙고</h1>
+    <p class="header-sub">방문한 곳을 사진으로 인증해 완성해 보세요</p>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="progress-card">
+    <div class="progress-nums">
+      <p class="progress-label">인증 완료</p>
+      <p class="progress-count"><span id="done-count">0</span><span> / 9</span></p>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="bingo-banner" id="bingo-banner">
+    <p class="bingo-banner-title" id="banner-title">🎉 빙고!</p>
+    <p class="bingo-banner-sub" id="banner-sub"></p>
+  </div>
+
+  <div class="bingo-grid" id="bingo-grid"></div>
+
+  <button class="reset-btn" onclick="resetAll()">처음부터 다시</button>
+</main>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="handleBackdropClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <p class="modal-mission" id="modal-mission"></p>
+    <p class="modal-hint">사진을 찍거나 갤러리에서 선택해 인증하세요</p>
+    <div class="photo-area" id="photo-area" onclick="document.getElementById('file-input').click()">
+      <div class="photo-placeholder" id="photo-placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        <span>탭해서 사진 선택 / 촬영</span>
+      </div>
+      <img id="photo-preview" src="" alt="인증 사진" style="display:none" />
+    </div>
+    <input type="file" id="file-input" accept="image/*" capture="environment" onchange="onFileSelect(event)" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">취소</button>
+      <button class="btn-confirm" id="btn-confirm" disabled onclick="confirmVerify()">인증 완료</button>
+    </div>
+    <p class="replace-note" id="replace-note" style="display:none">이미 인증된 칸입니다. 사진을 바꾸려면 새로 선택하세요.</p>
+  </div>
+</div>
+
+<script>
+  const CELLS = [
+    { emoji: "🚪", text: "팝업스토어 줄 서서 입장" },
+    { emoji: "📸", text: "인생샷 포토존 찍기" },
+    { emoji: "🎁", text: "한정판 굿즈 구매" },
+    { emoji: "🥤", text: "콜라보 음료 마시기" },
+    { emoji: "⭐", text: "아는 브랜드 팝업 발견" },
+    { emoji: "📍", text: "처음 가는 동네 팝업 방문" },
+    { emoji: "👥", text: "친구에게 팝업 추천하기" },
+    { emoji: "💜", text: "예상보다 훨씬 마음에 드는 공간" },
+    { emoji: "📅", text: "마감 하루 전에 방문" }
+  ];
+
+  let photos = JSON.parse(localStorage.getItem('popup-bingo-photos') || 'null') || Array(9).fill(null);
+  let activeIdx = null;
+  let pendingDataUrl = null;
+
+  function save() {
+    try { localStorage.setItem('popup-bingo-photos', JSON.stringify(photos)); } catch(e) {}
+  }
+
+  function checkBingo() {
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    return lines.filter(l => l.every(i => photos[i])).length;
+  }
+
+  function render() {
+    const grid = document.getElementById('bingo-grid');
+    grid.innerHTML = '';
+
+    CELLS.forEach((c, i) => {
+      const div = document.createElement('div');
+      div.className = 'cell' + (photos[i] ? ' verified' : '');
+      div.setAttribute('role', 'button');
+      div.setAttribute('aria-label', c.text + (photos[i] ? ' (인증됨)' : ''));
+      div.onclick = () => openModal(i);
+
+      let html = '';
+      if (photos[i]) {
+        html += `<img class="cell-photo" src="${photos[i]}" alt="" />`;
+        html += `<div class="cell-check"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>`;
+      }
+      html += `<div class="cell-body">
+        <span class="cell-emoji">${c.emoji}</span>
+        <span class="cell-label">${c.text}</span>
+      </div>`;
+
+      div.innerHTML = html;
+      grid.appendChild(div);
+    });
+
+    const cnt = photos.filter(Boolean).length;
+    document.getElementById('done-count').textContent = cnt;
+    document.getElementById('progress-bar').style.width = Math.round(cnt / 9 * 100) + '%';
+
+    const bingoCnt = checkBingo();
+    const banner = document.getElementById('bingo-banner');
+    if (bingoCnt > 0) {
+      banner.classList.add('show');
+      if (cnt === 9) {
+        document.getElementById('banner-title').textContent = '🏆 완전 정복!';
+        document.getElementById('banner-sub').textContent = '9칸 모두 인증! 전설의 팝업 헌터';
+      } else {
+        document.getElementById('banner-title').textContent = '🎉 빙고!';
+        document.getElementById('banner-sub').textContent = bingoCnt > 1
+          ? `${bingoCnt}줄 완성! 진짜 팝업 탐색가네요`
+          : '한 줄 완성했어요!';
+      }
+    } else {
+      banner.classList.remove('show');
+    }
+  }
+
+  function openModal(idx) {
+    activeIdx = idx;
+    pendingDataUrl = null;
+    document.getElementById('modal-mission').textContent = CELLS[idx].text;
+
+    const preview = document.getElementById('photo-preview');
+    const placeholder = document.getElementById('photo-placeholder');
+    const confirmBtn = document.getElementById('btn-confirm');
+    const replaceNote = document.getElementById('replace-note');
+    document.getElementById('file-input').value = '';
+
+    if (photos[idx]) {
+      preview.src = photos[idx];
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      confirmBtn.disabled = false;
+      pendingDataUrl = photos[idx];
+      replaceNote.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      placeholder.style.display = 'flex';
+      confirmBtn.disabled = true;
+      replaceNote.style.display = 'none';
+    }
+
+    document.getElementById('modal-backdrop').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-backdrop').classList.remove('open');
+    activeIdx = null;
+    pendingDataUrl = null;
+  }
+
+  function handleBackdropClick(e) {
+    if (e.target === document.getElementById('modal-backdrop')) closeModal();
+  }
+
+  function onFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingDataUrl = ev.target.result;
+      const preview = document.getElementById('photo-preview');
+      preview.src = pendingDataUrl;
+      preview.style.display = 'block';
+      document.getElementById('photo-placeholder').style.display = 'none';
+      document.getElementById('btn-confirm').disabled = false;
+      document.getElementById('replace-note').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function confirmVerify() {
+    if (activeIdx === null || !pendingDataUrl) return;
+    photos[activeIdx] = pendingDataUrl;
+    save();
+    closeModal();
+    render();
+  }
+
+  function resetAll() {
+    if (!confirm('모든 인증 사진이 삭제됩니다. 초기화할까요?')) return;
+    photos = Array(9).fill(null);
+    save();
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>
