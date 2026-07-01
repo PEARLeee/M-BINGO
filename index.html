@@ -3,28 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>팝업 공간 탐색 빙고</title>
-  <meta name="description" content="팝업스토어를 사진으로 인증하며 완성하는 빙고 게임" />
+  <title>무민 팝업 빙고</title>
+  <meta name="description" content="무민 팝업스토어 사진 인증 빙고" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #F7F5F2;
+      --bg: #EFF6F4;
       --surface: #FFFFFF;
-      --border: #E2DDD8;
-      --accent: #5B47E0;
-      --accent-light: #EEEdFE;
-      --accent-mid: #C4BCFA;
-      --text-primary: #1A1A1A;
-      --text-secondary: #6B6B6B;
-      --text-hint: #AEAEAE;
+      --border: #D9E6E2;
+      --accent: #3B7A6B;
+      --accent-light: #E1F0EA;
+      --accent-mid: #9FCBBC;
+      --text-primary: #1C2624;
+      --text-secondary: #6B7C77;
+      --text-hint: #A3B0AC;
       --radius-sm: 10px;
       --radius-md: 16px;
-      --radius-lg: 20px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+      --radius-lg: 22px;
     }
 
     body {
@@ -35,63 +34,63 @@
       padding: 0 0 80px;
     }
 
-    /* Header */
     .header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 20px 20px 16px;
+      padding: 22px 20px 18px;
       position: sticky; top: 0; z-index: 10;
     }
     .header-inner { max-width: 480px; margin: 0 auto; }
     .header-eyebrow {
-      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      color: var(--accent); text-transform: uppercase; margin-bottom: 4px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 5px;
     }
-    .header-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
-    .header-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .header-title { font-size: 21px; font-weight: 900; color: var(--text-primary); }
+    .header-sub { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
 
-    /* Main */
-    .main { max-width: 480px; margin: 0 auto; padding: 20px 16px; }
+    .main { max-width: 480px; margin: 0 auto; padding: 22px 16px; }
 
     /* Progress */
     .progress-card {
       background: var(--surface);
       border-radius: var(--radius-md);
       border: 1px solid var(--border);
-      padding: 16px 20px;
-      margin-bottom: 16px;
-      display: flex; align-items: center; gap: 16px;
+      padding: 18px 20px;
+      margin-bottom: 18px;
     }
-    .progress-nums { flex: 1; }
-    .progress-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 2px; }
-    .progress-count { font-size: 26px; font-weight: 700; color: var(--text-primary); line-height: 1; }
-    .progress-count span { font-size: 14px; font-weight: 400; color: var(--text-secondary); }
-    .progress-bar-wrap {
-      flex: 2;
-      height: 8px; background: var(--bg);
-      border-radius: 99px; overflow: hidden;
+    .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .progress-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+    .progress-count { font-size: 15px; font-weight: 700; color: var(--accent); }
+    .progress-dots { display: flex; gap: 8px; }
+    .progress-dot {
+      flex: 1; height: 10px; border-radius: 99px;
+      background: var(--bg); transition: background 0.3s;
     }
-    .progress-bar {
-      height: 100%; background: var(--accent);
-      border-radius: 99px; transition: width 0.4s ease;
-    }
+    .progress-dot.filled { background: var(--accent); }
 
-    /* Bingo badge */
+    /* Bingo banner */
     .bingo-banner {
       display: none;
-      background: var(--accent-light);
-      border: 1px solid var(--accent-mid);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      background: var(--accent);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin-bottom: 18px;
       text-align: center;
+      color: white;
     }
     .bingo-banner.show { display: block; }
-    .bingo-banner-title { font-size: 15px; font-weight: 700; color: var(--accent); }
-    .bingo-banner-sub { font-size: 13px; color: #534AB7; margin-top: 2px; }
+    .bingo-banner-title { font-size: 17px; font-weight: 900; }
+    .bingo-banner-sub { font-size: 13px; opacity: 0.9; margin-top: 3px; }
+    .bingo-banner-code {
+      margin-top: 12px; padding: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      font-size: 12px; line-height: 1.5;
+    }
+    .bingo-banner-code b { font-size: 14px; letter-spacing: 0.05em; }
 
-    /* Grid */
-    .bingo-grid {
+    /* Grid - single row of 3 */
+    .bingo-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
@@ -99,15 +98,15 @@
     }
 
     .cell {
-      aspect-ratio: 1;
+      aspect-ratio: 0.85;
       border-radius: var(--radius-md);
       background: var(--surface);
       border: 1px solid var(--border);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      text-align: center; padding: 10px;
+      text-align: center; padding: 12px 8px;
       cursor: pointer; position: relative; overflow: hidden;
-      transition: transform 0.12s, box-shadow 0.12s;
+      transition: transform 0.12s;
       -webkit-tap-highlight-color: transparent;
     }
     .cell:active { transform: scale(0.96); }
@@ -117,17 +116,20 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
       object-fit: cover;
-      opacity: 0.28;
+      opacity: 0.3;
     }
 
-    .cell-body { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-
-    .cell-emoji { font-size: 26px; line-height: 1; }
+    .cell-body { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .cell-num {
+      font-size: 11px; font-weight: 700; color: var(--text-hint);
+    }
+    .cell.verified .cell-num { color: var(--accent); }
+    .cell-emoji { font-size: 28px; line-height: 1; }
     .cell-label {
-      font-size: 10.5px; font-weight: 500;
-      color: var(--text-primary); line-height: 1.4;
+      font-size: 11.5px; font-weight: 500;
+      color: var(--text-primary); line-height: 1.45;
     }
-    .cell.verified .cell-label { color: #3C3489; }
+    .cell.verified .cell-label { color: #1F4438; }
 
     .cell-check {
       display: none;
@@ -137,24 +139,40 @@
       align-items: center; justify-content: center;
     }
     .cell.verified .cell-check { display: flex; }
-    .cell-check svg { width: 12px; height: 12px; }
 
-    /* Reset */
+    /* Staff verify section */
+    .staff-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .staff-title { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; }
+    .staff-hint { font-size: 12px; color: var(--text-hint); margin-bottom: 14px; line-height: 1.5; }
+    .staff-btn {
+      width: 100%; padding: 15px;
+      background: var(--accent); border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 14.5px; font-weight: 700;
+      color: white; cursor: pointer;
+    }
+    .staff-btn:disabled { background: var(--border); color: var(--text-hint); cursor: not-allowed; }
+    .staff-btn.used { background: #B8C4C0; }
+
     .reset-btn {
-      width: 100%; padding: 14px;
+      width: 100%; padding: 13px;
       background: transparent; border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      font-family: inherit; font-size: 14px; font-weight: 500;
-      color: var(--text-secondary); cursor: pointer;
-      transition: background 0.15s;
+      font-family: inherit; font-size: 13px; font-weight: 500;
+      color: var(--text-hint); cursor: pointer;
     }
-    .reset-btn:active { background: var(--border); }
 
-    /* Modal */
+    /* Modal (photo) */
     .modal-backdrop {
       display: none;
       position: fixed; inset: 0; z-index: 100;
-      background: rgba(10,10,10,0.55);
+      background: rgba(10,15,13,0.55);
       align-items: flex-end; justify-content: center;
     }
     .modal-backdrop.open { display: flex; }
@@ -166,17 +184,10 @@
       width: 100%; max-width: 480px;
       animation: slideUp 0.25s ease;
     }
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    .modal-handle {
-      width: 36px; height: 4px;
-      background: var(--border); border-radius: 99px;
-      margin: 0 auto 20px;
-    }
-    .modal-mission { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 99px; margin: 0 auto 20px; }
+    .modal-mission { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
     .modal-hint { font-size: 13px; color: var(--text-secondary); margin-bottom: 18px; }
 
     .photo-area {
@@ -191,67 +202,79 @@
     }
     .photo-area img { width: 100%; height: 100%; object-fit: cover; }
     .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .photo-placeholder svg { opacity: 0.3; }
     .photo-placeholder span { font-size: 13px; color: var(--text-hint); }
 
     .modal-actions { display: flex; gap: 10px; }
     .btn-cancel {
-      flex: 1; padding: 14px;
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: inherit; font-size: 14px; font-weight: 500;
+      flex: 1; padding: 14px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; font-weight: 500;
       color: var(--text-secondary); cursor: pointer;
     }
     .btn-confirm {
-      flex: 2; padding: 14px;
-      background: var(--accent); border: none;
-      border-radius: var(--radius-sm);
-      font-family: inherit; font-size: 14px; font-weight: 700;
-      color: white; cursor: pointer;
-      transition: opacity 0.15s;
+      flex: 2; padding: 14px; background: var(--accent); border: none;
+      border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; font-weight: 700;
+      color: white; cursor: pointer; transition: opacity 0.15s;
     }
     .btn-confirm:disabled { opacity: 0.35; cursor: not-allowed; }
-    .btn-confirm:not(:disabled):active { opacity: 0.8; }
-
     input[type=file] { display: none; }
 
-    /* If already verified, show replace note */
-    .replace-note { font-size: 12px; color: var(--text-hint); text-align: center; margin-top: 10px; }
+    .uploading { text-align: center; font-size: 13px; color: var(--text-hint); padding: 10px; }
+
+    /* Staff PIN modal */
+    .pin-modal { max-width: 320px; padding: 28px 24px; border-radius: var(--radius-md); text-align: center; }
+    .pin-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+    .pin-input {
+      width: 100%; padding: 14px; font-size: 18px; text-align: center;
+      letter-spacing: 0.3em; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      margin-bottom: 14px; font-family: inherit;
+    }
+    .pin-error { font-size: 12px; color: #C0392B; margin-bottom: 10px; min-height: 16px; }
   </style>
 </head>
 <body>
 
 <header class="header">
   <div class="header-inner">
-    <p class="header-eyebrow">Photo Bingo</p>
-    <h1 class="header-title">팝업 공간 탐색 빙고</h1>
-    <p class="header-sub">방문한 곳을 사진으로 인증해 완성해 보세요</p>
+    <p class="header-eyebrow">Moomin Pop-up</p>
+    <h1 class="header-title">무민 팝업 빙고</h1>
+    <p class="header-sub">3칸을 모두 채우고 직원에게 보여주세요!</p>
   </div>
 </header>
 
 <main class="main">
 
   <div class="progress-card">
-    <div class="progress-nums">
-      <p class="progress-label">인증 완료</p>
-      <p class="progress-count"><span id="done-count">0</span><span> / 9</span></p>
+    <div class="progress-top">
+      <span class="progress-label">인증 완료</span>
+      <span class="progress-count"><span id="done-count">0</span> / 3</span>
     </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    <div class="progress-dots">
+      <div class="progress-dot" id="dot-0"></div>
+      <div class="progress-dot" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
     </div>
   </div>
 
   <div class="bingo-banner" id="bingo-banner">
-    <p class="bingo-banner-title" id="banner-title">🎉 빙고!</p>
-    <p class="bingo-banner-sub" id="banner-sub"></p>
+    <p class="bingo-banner-title">🎉 한 줄 빙고 완성!</p>
+    <p class="bingo-banner-sub">직원에게 화면을 보여주고 GWP를 받아보세요</p>
+    <div class="bingo-banner-code">
+      참여 코드<br/><b id="entry-code">-</b>
+    </div>
   </div>
 
-  <div class="bingo-grid" id="bingo-grid"></div>
+  <div class="bingo-row" id="bingo-row"></div>
 
-  <button class="reset-btn" onclick="resetAll()">처음부터 다시</button>
+  <div class="staff-section">
+    <p class="staff-title">직원 확인용</p>
+    <p class="staff-hint">손님이 3칸을 모두 채운 것을 확인한 후, 직원이 직접 눌러주세요. GWP는 1회만 지급됩니다.</p>
+    <button class="staff-btn" id="staff-verify-btn" disabled onclick="openPinModal()">GWP 지급 확인</button>
+  </div>
+
+  <button class="reset-btn" onclick="resetAll()">처음부터 다시 (내 기기에서만)</button>
 </main>
 
-<!-- Modal -->
+<!-- Photo Modal -->
 <div class="modal-backdrop" id="modal-backdrop" onclick="handleBackdropClick(event)">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -272,39 +295,148 @@
       <button class="btn-cancel" onclick="closeModal()">취소</button>
       <button class="btn-confirm" id="btn-confirm" disabled onclick="confirmVerify()">인증 완료</button>
     </div>
-    <p class="replace-note" id="replace-note" style="display:none">이미 인증된 칸입니다. 사진을 바꾸려면 새로 선택하세요.</p>
+    <p class="uploading" id="uploading-msg" style="display:none">업로드 중...</p>
   </div>
 </div>
 
-<script>
-  const CELLS = [
-    { emoji: "🚪", text: "팝업스토어 줄 서서 입장" },
-    { emoji: "📸", text: "인생샷 포토존 찍기" },
-    { emoji: "🎁", text: "한정판 굿즈 구매" },
-    { emoji: "🥤", text: "콜라보 음료 마시기" },
-    { emoji: "⭐", text: "아는 브랜드 팝업 발견" },
-    { emoji: "📍", text: "처음 가는 동네 팝업 방문" },
-    { emoji: "👥", text: "친구에게 팝업 추천하기" },
-    { emoji: "💜", text: "예상보다 훨씬 마음에 드는 공간" },
-    { emoji: "📅", text: "마감 하루 전에 방문" }
-  ];
+<!-- Staff PIN Modal -->
+<div class="modal-backdrop" id="pin-backdrop" onclick="handlePinBackdropClick(event)">
+  <div class="modal pin-modal">
+    <p class="pin-title">직원 PIN 입력</p>
+    <input type="password" inputmode="numeric" maxlength="4" class="pin-input" id="pin-input" placeholder="••••" />
+    <p class="pin-error" id="pin-error"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePinModal()">취소</button>
+      <button class="btn-confirm" onclick="submitPin()">확인 및 지급</button>
+    </div>
+  </div>
+</div>
 
-  let photos = JSON.parse(localStorage.getItem('popup-bingo-photos') || 'null') || Array(9).fill(null);
-  let activeIdx = null;
-  let pendingDataUrl = null;
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  function save() {
-    try { localStorage.setItem('popup-bingo-photos', JSON.stringify(photos)); } catch(e) {}
+  // ⚠️ 아래 firebaseConfig 값을 본인 Firebase 프로젝트 설정으로 교체하세요
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_zpPixyI-Hp6hpuw2Uq7Y4Q5Qvj_l6SI",
+    authDomain: "moomin-ssg.firebaseapp.com",
+    projectId: "moomin-ssg",
+    storageBucket: "moomin-ssg.firebasestorage.app",
+    messagingSenderId: "366062905753",
+    appId: "1:366062905753:web:54bcb491eba940ec980b08"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 직원 PIN (관리자 페이지에서 변경 가능하도록 추후 확장 가능)
+  const STAFF_PIN = "1234";
+
+  // 이 기기/손님의 고유 세션 ID (참여 코드로도 사용)
+  function getSessionId() {
+    let id = localStorage.getItem('moomin-bingo-session');
+    if (!id) {
+      id = 'M' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+      localStorage.setItem('moomin-bingo-session', id);
+    }
+    return id;
   }
 
-  function checkBingo() {
-    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    return lines.filter(l => l.every(i => photos[i])).length;
+  const CELLS = [
+    { emoji: "💧", text: "비밀의 주문 우물에서 사진 촬영!" },
+    { emoji: "🪧", text: "에피소드 팻말 촬영" },
+    { emoji: "🤳", text: "무민과 셀피" }
+  ];
+
+  const sessionId = getSessionId();
+  let photos = JSON.parse(localStorage.getItem('moomin-bingo-photos') || 'null') || Array(3).fill(null);
+  let redeemed = localStorage.getItem('moomin-bingo-redeemed') === 'true';
+  let activeIdx = null;
+  let pendingDataUrl = null;
+  let pendingMime = null;
+
+  function saveLocal() {
+    try {
+      localStorage.setItem('moomin-bingo-photos', JSON.stringify(photos));
+      localStorage.setItem('moomin-bingo-redeemed', redeemed ? 'true' : 'false');
+    } catch(e) {}
+  }
+
+  function allFilled() {
+    return photos.every(p => p);
+  }
+
+  async function logVisit() {
+    try {
+      const visitRef = doc(db, 'sessions', sessionId);
+      await setDoc(visitRef, {
+        sessionId,
+        lastSeen: serverTimestamp(),
+        cellsCompleted: photos.filter(Boolean).length,
+        redeemed
+      }, { merge: true });
+      await addDoc(collection(db, 'pageviews'), {
+        sessionId,
+        timestamp: serverTimestamp(),
+        userAgent: navigator.userAgent
+      });
+    } catch(e) { console.warn('Firebase log failed', e); }
+  }
+
+  async function savePhotoToFirestore(idx, dataUrl) {
+    try {
+      const cellRef = doc(db, 'sessions', sessionId, 'cells', String(idx));
+      await setDoc(cellRef, {
+        cellIndex: idx,
+        missionText: CELLS[idx].text,
+        photoDataUrl: dataUrl, // 데모용: 실제 운영시엔 Storage 업로드 후 URL 저장 권장
+        verifiedAt: serverTimestamp()
+      });
+      const sessionRef = doc(db, 'sessions', sessionId);
+      await setDoc(sessionRef, {
+        sessionId,
+        cellsCompleted: photos.filter(Boolean).length,
+        lastUpdated: serverTimestamp(),
+        allCompleted: allFilled(),
+        redeemed
+      }, { merge: true });
+    } catch(e) {
+      console.warn('Firebase save failed', e);
+    }
+  }
+
+  async function markRedeemed() {
+    try {
+      const sessionRef = doc(db, 'sessions', sessionId);
+      await setDoc(sessionRef, {
+        sessionId,
+        redeemed: true,
+        redeemedAt: serverTimestamp(),
+        cellsCompleted: 3,
+        allCompleted: true
+      }, { merge: true });
+    } catch(e) {
+      console.warn('Firebase redeem save failed', e);
+    }
+  }
+
+  async function checkAlreadyRedeemed() {
+    try {
+      const sessionRef = doc(db, 'sessions', sessionId);
+      const snap = await getDoc(sessionRef);
+      if (snap.exists() && snap.data().redeemed) {
+        redeemed = true;
+        saveLocal();
+      }
+    } catch(e) { console.warn(e); }
   }
 
   function render() {
-    const grid = document.getElementById('bingo-grid');
-    grid.innerHTML = '';
+    const row = document.getElementById('bingo-row');
+    row.innerHTML = '';
 
     CELLS.forEach((c, i) => {
       const div = document.createElement('div');
@@ -316,36 +448,36 @@
       let html = '';
       if (photos[i]) {
         html += `<img class="cell-photo" src="${photos[i]}" alt="" />`;
-        html += `<div class="cell-check"><svg viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>`;
+        html += `<div class="cell-check"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,6 5,9 10,3"/></svg></div>`;
       }
       html += `<div class="cell-body">
+        <span class="cell-num">${i+1}</span>
         <span class="cell-emoji">${c.emoji}</span>
         <span class="cell-label">${c.text}</span>
       </div>`;
-
       div.innerHTML = html;
-      grid.appendChild(div);
+      row.appendChild(div);
     });
 
     const cnt = photos.filter(Boolean).length;
     document.getElementById('done-count').textContent = cnt;
-    document.getElementById('progress-bar').style.width = Math.round(cnt / 9 * 100) + '%';
+    for (let i = 0; i < 3; i++) {
+      document.getElementById('dot-' + i).classList.toggle('filled', i < cnt);
+    }
 
-    const bingoCnt = checkBingo();
     const banner = document.getElementById('bingo-banner');
-    if (bingoCnt > 0) {
+    const staffBtn = document.getElementById('staff-verify-btn');
+
+    if (allFilled()) {
       banner.classList.add('show');
-      if (cnt === 9) {
-        document.getElementById('banner-title').textContent = '🏆 완전 정복!';
-        document.getElementById('banner-sub').textContent = '9칸 모두 인증! 전설의 팝업 헌터';
-      } else {
-        document.getElementById('banner-title').textContent = '🎉 빙고!';
-        document.getElementById('banner-sub').textContent = bingoCnt > 1
-          ? `${bingoCnt}줄 완성! 진짜 팝업 탐색가네요`
-          : '한 줄 완성했어요!';
-      }
+      document.getElementById('entry-code').textContent = sessionId;
+      staffBtn.disabled = redeemed;
+      staffBtn.textContent = redeemed ? '✓ GWP 지급 완료' : 'GWP 지급 확인';
+      staffBtn.classList.toggle('used', redeemed);
     } else {
       banner.classList.remove('show');
+      staffBtn.disabled = true;
+      staffBtn.textContent = 'GWP 지급 확인';
     }
   }
 
@@ -357,8 +489,8 @@
     const preview = document.getElementById('photo-preview');
     const placeholder = document.getElementById('photo-placeholder');
     const confirmBtn = document.getElementById('btn-confirm');
-    const replaceNote = document.getElementById('replace-note');
     document.getElementById('file-input').value = '';
+    document.getElementById('uploading-msg').style.display = 'none';
 
     if (photos[idx]) {
       preview.src = photos[idx];
@@ -366,12 +498,10 @@
       placeholder.style.display = 'none';
       confirmBtn.disabled = false;
       pendingDataUrl = photos[idx];
-      replaceNote.style.display = 'block';
     } else {
       preview.style.display = 'none';
       placeholder.style.display = 'flex';
       confirmBtn.disabled = true;
-      replaceNote.style.display = 'none';
     }
 
     document.getElementById('modal-backdrop').classList.add('open');
@@ -382,14 +512,17 @@
     activeIdx = null;
     pendingDataUrl = null;
   }
+  window.closeModal = closeModal;
 
   function handleBackdropClick(e) {
     if (e.target === document.getElementById('modal-backdrop')) closeModal();
   }
+  window.handleBackdropClick = handleBackdropClick;
 
   function onFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
+    pendingMime = file.type;
     const reader = new FileReader();
     reader.onload = ev => {
       pendingDataUrl = ev.target.result;
@@ -398,27 +531,78 @@
       preview.style.display = 'block';
       document.getElementById('photo-placeholder').style.display = 'none';
       document.getElementById('btn-confirm').disabled = false;
-      document.getElementById('replace-note').style.display = 'none';
     };
     reader.readAsDataURL(file);
   }
+  window.onFileSelect = onFileSelect;
 
-  function confirmVerify() {
+  async function confirmVerify() {
     if (activeIdx === null || !pendingDataUrl) return;
+    document.getElementById('uploading-msg').style.display = 'block';
+    document.getElementById('btn-confirm').disabled = true;
+
     photos[activeIdx] = pendingDataUrl;
-    save();
+    saveLocal();
+    await savePhotoToFirestore(activeIdx, pendingDataUrl);
+
     closeModal();
     render();
   }
+  window.confirmVerify = confirmVerify;
 
   function resetAll() {
-    if (!confirm('모든 인증 사진이 삭제됩니다. 초기화할까요?')) return;
-    photos = Array(9).fill(null);
-    save();
+    if (!confirm('내 기기의 진행 상황이 초기화됩니다 (서버 기록은 유지). 초기화할까요?')) return;
+    photos = Array(3).fill(null);
+    saveLocal();
     render();
   }
+  window.resetAll = resetAll;
 
-  render();
+  // Staff PIN modal
+  function openPinModal() {
+    if (!allFilled() || redeemed) return;
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-error').textContent = '';
+    document.getElementById('pin-backdrop').classList.add('open');
+    setTimeout(() => document.getElementById('pin-input').focus(), 100);
+  }
+  window.openPinModal = openPinModal;
+
+  function closePinModal() {
+    document.getElementById('pin-backdrop').classList.remove('open');
+  }
+  window.closePinModal = closePinModal;
+
+  function handlePinBackdropClick(e) {
+    if (e.target === document.getElementById('pin-backdrop')) closePinModal();
+  }
+  window.handlePinBackdropClick = handlePinBackdropClick;
+
+  async function submitPin() {
+    const val = document.getElementById('pin-input').value;
+    if (val !== STAFF_PIN) {
+      document.getElementById('pin-error').textContent = 'PIN이 올바르지 않습니다';
+      return;
+    }
+    // double-check against server to prevent double redemption
+    await checkAlreadyRedeemed();
+    if (redeemed) {
+      document.getElementById('pin-error').textContent = '이미 지급된 GWP입니다';
+      closePinModal();
+      render();
+      return;
+    }
+    redeemed = true;
+    saveLocal();
+    await markRedeemed();
+    closePinModal();
+    render();
+  }
+  window.submitPin = submitPin;
+
+  // init
+  checkAlreadyRedeemed().then(render);
+  logVisit();
 </script>
 </body>
 </html>
