@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>무민 팝업 빙고 - 관리자</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F4F6F5; --surface: #FFFFFF; --border: #E1E6E4;
+      --accent: #3B7A6B; --accent-light: #E1F0EA;
+      --text-primary: #1C2624; --text-secondary: #6B7C77; --text-hint: #A3B0AC;
+      --warn: #C0392B; --warn-light: #FBEAE8;
+    }
+    body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
+
+    .login-wrap {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 36px 28px; width: 100%; max-width: 340px; text-align: center;
+    }
+    .login-card h1 { font-size: 17px; font-weight: 900; margin-bottom: 6px; }
+    .login-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 22px; }
+    .login-card input {
+      width: 100%; padding: 14px; font-size: 16px; text-align: center; letter-spacing: 0.2em;
+      border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; font-family: inherit;
+    }
+    .login-card button {
+      width: 100%; padding: 14px; background: var(--accent); color: white; border: none;
+      border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .login-error { font-size: 12px; color: var(--warn); margin-top: 10px; min-height: 14px; }
+
+    .dashboard { display: none; max-width: 920px; margin: 0 auto; padding: 24px 16px 60px; }
+    .dashboard.show { display: block; }
+
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .dash-title { font-size: 19px; font-weight: 900; }
+    .dash-sub { font-size: 12.5px; color: var(--text-secondary); margin-top: 2px; }
+    .refresh-btn {
+      padding: 9px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; font-family: inherit; font-size: 12.5px; font-weight: 500; cursor: pointer; color: var(--text-secondary);
+    }
+
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px; margin-bottom: 22px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    }
+    .stat-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; margin-bottom: 6px; }
+    .stat-value { font-size: 26px; font-weight: 900; color: var(--text-primary); }
+    .stat-value.accent { color: var(--accent); }
+
+    .section-title { font-size: 14px; font-weight: 700; margin: 26px 0 12px; color: var(--text-primary); }
+
+    .table-wrap {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left; padding: 12px 14px; background: var(--bg);
+      font-weight: 700; color: var(--text-secondary); font-size: 11.5px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--border);
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 11px; font-weight: 700;
+    }
+    .badge.done { background: var(--accent-light); color: var(--accent); }
+    .badge.progress { background: #FFF3D6; color: #966B00; }
+    .badge.redeemed { background: var(--accent); color: white; }
+    .badge.not-redeemed { background: var(--bg); color: var(--text-hint); }
+
+    .photo-thumbs { display: flex; gap: 5px; }
+    .photo-thumbs img { width: 34px; height: 34px; border-radius: 6px; object-fit: cover; border: 1px solid var(--border); cursor: pointer; }
+    .photo-thumbs .empty-thumb { width: 34px; height: 34px; border-radius: 6px; background: var(--bg); border: 1px dashed var(--border); }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-hint); font-size: 13px; }
+
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 8px; }
+
+    .session-id-cell { font-family: monospace; font-size: 11.5px; color: var(--text-secondary); }
+
+    @media (max-width: 640px) {
+      .table-wrap { overflow-x: auto; }
+      table { min-width: 560px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <h1>관리자 페이지</h1>
+    <p>무민 팝업 빙고 — 트래픽 / 인증 현황</p>
+    <input type="password" id="admin-pin" placeholder="관리자 PIN" inputmode="numeric" maxlength="6" />
+    <button onclick="tryLogin()">로그인</button>
+    <p class="login-error" id="login-error"></p>
+  </div>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">무민 팝업 빙고 관리자</div>
+      <div class="dash-sub" id="last-updated">불러오는 중...</div>
+    </div>
+    <button class="refresh-btn" onclick="loadAll()">새로고침</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">총 방문(세션)</div>
+      <div class="stat-value" id="stat-total">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">한 줄 완성</div>
+      <div class="stat-value accent" id="stat-completed">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">GWP 지급 완료</div>
+      <div class="stat-value accent" id="stat-redeemed">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">총 페이지뷰</div>
+      <div class="stat-value" id="stat-pageviews">-</div>
+    </div>
+  </div>
+
+  <div class="section-title">참여자 목록</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>참여 코드</th>
+          <th>진행</th>
+          <th>인증 사진</th>
+          <th>완성 여부</th>
+          <th>GWP</th>
+          <th>마지막 활동</th>
+        </tr>
+      </thead>
+      <tbody id="sessions-tbody">
+        <tr><td colspan="6" class="empty-state">불러오는 중...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="인증 사진 확대" />
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, query, orderBy, limit
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ⚠️ index.html과 동일한 firebaseConfig로 교체하세요
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_zpPixyI-Hp6hpuw2Uq7Y4Q5Qvj_l6SI",
+    authDomain: "moomin-ssg.firebaseapp.com",
+    projectId: "moomin-ssg",
+    storageBucket: "moomin-ssg.firebasestorage.app",
+    messagingSenderId: "366062905753",
+    appId: "1:366062905753:web:54bcb491eba940ec980b08"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const ADMIN_PIN = "9999"; // 직원 PIN과 다르게, 관리자만 아는 PIN으로 설정하세요
+
+  window.tryLogin = function() {
+    const val = document.getElementById('admin-pin').value;
+    if (val !== ADMIN_PIN) {
+      document.getElementById('login-error').textContent = 'PIN이 올바르지 않습니다';
+      return;
+    }
+    document.getElementById('login-wrap').style.display = 'none';
+    document.getElementById('dashboard').classList.add('show');
+    loadAll();
+  };
+
+  window.closeLightbox = function() {
+    document.getElementById('lightbox').classList.remove('open');
+  };
+
+  window.openLightbox = function(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  };
+
+  async function loadAll() {
+    document.getElementById('last-updated').textContent = '불러오는 중...';
+
+    try {
+      // sessions
+      const sessionsSnap = await getDocs(collection(db, 'sessions'));
+      const sessions = [];
+      sessionsSnap.forEach(d => sessions.push({ id: d.id, ...d.data() }));
+
+      // pageviews (count only, capped at 1000 for free-tier safety)
+      let pageviewCount = 0;
+      try {
+        const pvSnap = await getDocs(query(collection(db, 'pageviews'), limit(1000)));
+        pageviewCount = pvSnap.size;
+      } catch(e) { console.warn(e); }
+
+      // stats
+      const total = sessions.length;
+      const completed = sessions.filter(s => s.allCompleted).length;
+      const redeemed = sessions.filter(s => s.redeemed).length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-completed').textContent = completed;
+      document.getElementById('stat-redeemed').textContent = redeemed;
+      document.getElementById('stat-pageviews').textContent = pageviewCount + (pageviewCount >= 1000 ? '+' : '');
+
+      // sort by lastUpdated desc
+      sessions.sort((a, b) => {
+        const at = a.lastUpdated?.seconds || a.lastSeen?.seconds || 0;
+        const bt = b.lastUpdated?.seconds || b.lastSeen?.seconds || 0;
+        return bt - at;
+      });
+
+      const tbody = document.getElementById('sessions-tbody');
+      if (sessions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">아직 참여자가 없어요</td></tr>';
+      } else {
+        const rows = await Promise.all(sessions.map(async (s) => {
+          const cellsSnap = await getDocs(collection(db, 'sessions', s.id, 'cells'));
+          const photosByIdx = {};
+          cellsSnap.forEach(c => { photosByIdx[c.data().cellIndex] = c.data().photoDataUrl; });
+
+          let thumbs = '';
+          for (let i = 0; i < 3; i++) {
+            if (photosByIdx[i]) {
+              thumbs += `<img src="${photosByIdx[i]}" onclick="openLightbox('${photosByIdx[i].replace(/'/g, "\\'")}')" alt="${i+1}번 칸 사진" />`;
+            } else {
+              thumbs += `<div class="empty-thumb"></div>`;
+            }
+          }
+
+          const cnt = s.cellsCompleted || 0;
+          const lastTs = s.lastUpdated?.seconds || s.lastSeen?.seconds;
+          const lastStr = lastTs ? new Date(lastTs * 1000).toLocaleString('ko-KR') : '-';
+
+          return `
+            <tr>
+              <td class="session-id-cell">${s.sessionId || s.id}</td>
+              <td>${cnt} / 3</td>
+              <td><div class="photo-thumbs">${thumbs}</div></td>
+              <td>${s.allCompleted ? '<span class="badge done">완성</span>' : '<span class="badge progress">진행중</span>'}</td>
+              <td>${s.redeemed ? '<span class="badge redeemed">지급됨</span>' : '<span class="badge not-redeemed">미지급</span>'}</td>
+              <td>${lastStr}</td>
+            </tr>
+          `;
+        }));
+        tbody.innerHTML = rows.join('');
+      }
+
+      document.getElementById('last-updated').textContent = '마지막 업데이트: ' + new Date().toLocaleString('ko-KR');
+    } catch (e) {
+      console.error(e);
+      document.getElementById('last-updated').textContent = '데이터를 불러오지 못했어요 (Firebase 설정을 확인하세요)';
+    }
+  }
+
+  window.loadAll = loadAll;
+</script>
+</body>
+</html>
