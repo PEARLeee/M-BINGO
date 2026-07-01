@@ -160,6 +160,14 @@
     .staff-btn:disabled { background: var(--border); color: var(--text-hint); cursor: not-allowed; }
     .staff-btn.used { background: #B8C4C0; }
 
+    .reset-btn {
+      width: 100%; padding: 13px; margin-top: 10px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 13px; font-weight: 500;
+      color: var(--text-hint); cursor: pointer;
+    }
+
     /* Modal (photo) */
     .modal-backdrop {
       display: none;
@@ -257,9 +265,10 @@
   <div class="staff-section">
     <p class="staff-title">직원 확인용</p>
     <p class="staff-hint">손님이 3칸을 모두 채운 것을 확인한 후, 직원이 직접 눌러주세요. GWP는 1회만 지급됩니다.</p>
-    <button class="staff-btn" id="staff-verify-btn" disabled onclick="openPinModal()">GWP 지급 확인</button>
+    <button class="staff-btn" id="staff-verify-btn" disabled onclick="onStaffBtnClick()">GWP 지급 확인</button>
   </div>
 
+  <button class="reset-btn" onclick="resetAll()">처음부터 다시</button>
 
 </main>
 
@@ -298,6 +307,17 @@
       <button class="btn-cancel" onclick="closePinModal()">취소</button>
       <button class="btn-confirm" onclick="submitPin()">확인 및 지급</button>
     </div>
+  </div>
+</div>
+
+
+<!-- Already Redeemed Modal -->
+<div class="modal-backdrop" id="already-backdrop" onclick="closeAlreadyModal()">
+  <div class="modal" style="text-align:center; padding: 36px 24px 40px;">
+    <div style="font-size:40px; margin-bottom:14px;">🙅</div>
+    <p style="font-size:17px; font-weight:900; margin-bottom:8px; color:var(--text-primary);">이미 참여가 완료된 고객이에요!</p>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:24px; line-height:1.6;">GWP는 1인 1회만 지급됩니다.<br/>이미 지급이 완료된 고객이에요.</p>
+    <button class="btn-confirm" style="width:100%;" onclick="closeAlreadyModal()">확인</button>
   </div>
 </div>
 
@@ -459,7 +479,7 @@
 
     if (allFilled()) {
       banner.classList.add('show');
-      staffBtn.disabled = redeemed;
+      staffBtn.disabled = false;
       staffBtn.textContent = redeemed ? '✓ GWP 지급 완료' : 'GWP 지급 확인';
       staffBtn.classList.toggle('used', redeemed);
     } else {
@@ -537,6 +557,30 @@
     render();
   }
   window.confirmVerify = confirmVerify;
+
+  // 직원 버튼 클릭 - 이미 인증된 경우 알림, 아니면 PIN 입력
+  function onStaffBtnClick() {
+    if (redeemed) {
+      document.getElementById('already-backdrop').classList.add('open');
+      return;
+    }
+    openPinModal();
+  }
+  window.onStaffBtnClick = onStaffBtnClick;
+
+  function closeAlreadyModal() {
+    document.getElementById('already-backdrop').classList.remove('open');
+  }
+  window.closeAlreadyModal = closeAlreadyModal;
+
+  function resetAll() {
+    if (!confirm('처음부터 다시 시작할까요? 내 기기의 사진이 초기화됩니다.')) return;
+    photos = Array(3).fill(null);
+    redeemed = false;
+    saveLocal();
+    render();
+  }
+  window.resetAll = resetAll;
 
   // Staff PIN modal
   function openPinModal() {
