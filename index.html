@@ -558,8 +558,9 @@
   }
   window.confirmVerify = confirmVerify;
 
-  // 직원 버튼 클릭 - 이미 인증된 경우 알림, 아니면 PIN 입력
-  function onStaffBtnClick() {
+  // 직원 버튼 클릭 - 서버에서 실시간으로 redeemed 확인 후 판단
+  async function onStaffBtnClick() {
+    await checkAlreadyRedeemed(); // 항상 서버에서 최신 상태 확인
     if (redeemed) {
       document.getElementById('already-backdrop').classList.add('open');
       return;
@@ -576,7 +577,7 @@
   function resetAll() {
     if (!confirm('처음부터 다시 시작할까요? 내 기기의 사진이 초기화됩니다.')) return;
     photos = Array(3).fill(null);
-    redeemed = false;
+    // redeemed는 서버 기록이 있으면 절대 초기화하지 않음
     saveLocal();
     render();
   }
