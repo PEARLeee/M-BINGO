@@ -160,14 +160,6 @@
     .staff-btn:disabled { background: var(--border); color: var(--text-hint); cursor: not-allowed; }
     .staff-btn.used { background: #B8C4C0; }
 
-    .reset-btn {
-      width: 100%; padding: 13px;
-      background: transparent; border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: inherit; font-size: 13px; font-weight: 500;
-      color: var(--text-hint); cursor: pointer;
-    }
-
     /* Modal (photo) */
     .modal-backdrop {
       display: none;
@@ -258,9 +250,6 @@
   <div class="bingo-banner" id="bingo-banner">
     <p class="bingo-banner-title">🎉 한 줄 빙고 완성!</p>
     <p class="bingo-banner-sub">직원에게 화면을 보여주고 GWP를 받아보세요</p>
-    <div class="bingo-banner-code">
-      참여 코드<br/><b id="entry-code">-</b>
-    </div>
   </div>
 
   <div class="bingo-row" id="bingo-row"></div>
@@ -271,7 +260,7 @@
     <button class="staff-btn" id="staff-verify-btn" disabled onclick="openPinModal()">GWP 지급 확인</button>
   </div>
 
-  <button class="reset-btn" onclick="resetAll()">처음부터 다시 (내 기기에서만)</button>
+
 </main>
 
 <!-- Photo Modal -->
@@ -470,7 +459,6 @@
 
     if (allFilled()) {
       banner.classList.add('show');
-      document.getElementById('entry-code').textContent = sessionId;
       staffBtn.disabled = redeemed;
       staffBtn.textContent = redeemed ? '✓ GWP 지급 완료' : 'GWP 지급 확인';
       staffBtn.classList.toggle('used', redeemed);
@@ -549,14 +537,6 @@
     render();
   }
   window.confirmVerify = confirmVerify;
-
-  function resetAll() {
-    if (!confirm('내 기기의 진행 상황이 초기화됩니다 (서버 기록은 유지). 초기화할까요?')) return;
-    photos = Array(3).fill(null);
-    saveLocal();
-    render();
-  }
-  window.resetAll = resetAll;
 
   // Staff PIN modal
   function openPinModal() {
