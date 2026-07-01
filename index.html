@@ -236,8 +236,8 @@
 <header class="header">
   <div class="header-inner">
     <p class="header-eyebrow">Moomin Pop-up</p>
-    <h1 class="header-title">무민 골짜기의 여름을 담아보세요 ⋆˚ 𝜗𝜚˚⋆ </h1>
-    <p class="header-sub">3칸을 모두 채우고 직원에게 보여주세요!</p>
+    <h1 class="header-title">무민 골짜기의 여름을 담아보세요 🍃</h1>
+    <p class="header-sub">3개의 조각을 모두 수집한 후 스태프에게 보여주세요!</p>
   </div>
 </header>
 
@@ -245,7 +245,7 @@
 
   <div class="progress-card">
     <div class="progress-top">
-      <span class="progress-label">인증 완료</span>
+      <span class="progress-label">무민 골짜기의 여름 조각 수집도</span>
       <span class="progress-count"><span id="done-count">0</span> / 3</span>
     </div>
     <div class="progress-dots">
@@ -256,19 +256,19 @@
   </div>
 
   <div class="bingo-banner" id="bingo-banner">
-    <p class="bingo-banner-title">🎉 한 줄 빙고 완성!</p>
-    <p class="bingo-banner-sub">직원에게 화면을 보여주고 GWP를 받아보세요</p>
+    <p class="bingo-banner-title">🍃 여름 조각 수집 완료!</p>
+    <p class="bingo-banner-sub">스태프에게 화면을 보여주고 GWP를 받아보세요</p>
   </div>
 
   <div class="bingo-row" id="bingo-row"></div>
 
   <div class="staff-section">
-    <p class="staff-title">직원 확인용</p>
-    <p class="staff-hint">손님이 3칸을 모두 채운 것을 확인한 후, 직원이 직접 눌러주세요. GWP는 1회만 지급됩니다.</p>
+    <p class="staff-title">스태프 인증</p>
+    <p class="staff-hint">무민 골짜기의 여름 조각 3개를 모두 수집한 후, 스태프에게 해당 화면을 보여주세요. GWP는 1회만 지급됩니다.</p>
     <button class="staff-btn" id="staff-verify-btn" disabled onclick="onStaffBtnClick()">GWP 지급 확인</button>
   </div>
 
-  <button class="reset-btn" onclick="resetAll()">처음부터 다시</button>
+  <button class="reset-btn" onclick="resetAll()">다시 수집하기</button>
 
 </main>
 
@@ -355,9 +355,12 @@
   }
 
   const CELLS = [
-    { emoji: "💧", text: "비밀의 주문 우물에서 사진 촬영!" },
-    { emoji: "🪧", text: "마음에 드는 에피소드 팻말 촬영!" },
-    { emoji: "🤳", text: "@moominshop_kr 인스타그램 팔로우!" }
+    { emoji: "💧", text: "비밀의 주문 우물에서 
+      사진 촬영!" },
+    { emoji: "🪧", text: "마음에 드는 
+      에피소드 팻말 촬영!" },
+    { emoji: "🤳", text: "@moominshop_kr 
+    인스타그램 팔로우!" }
   ];
 
   const sessionId = getSessionId();
